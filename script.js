@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // === 3. FALLING PETALS ANIMATION (CANVAS) ===
     const canvas = document.getElementById('falling-effect');
     const ctx = canvas.getContext('2d');
-    
+
     let width = window.innerWidth;
     let height = window.innerHeight;
     canvas.width = width;
@@ -109,25 +109,172 @@ document.addEventListener('DOMContentLoaded', () => {
     animateParticles();
 });
 
-// === 4. LUCKY MONEY INTERACTION ===
-function openEnvelope(element) {
-    if (!element.classList.contains('open')) {
-        element.classList.add('open');
-        const message = document.querySelector('.lucky-message');
-        message.classList.remove('hidden');
+// === 4. LUCKY MONEY INTERACTION & DATA ===
+const wishes = [
+    "Tiền vào như nước sông Đà\nTiền ra nhỏ giọt như cà phê phin",
+    "Sống khỏe như trâu\nSống dai như đỉa\nSống lâu như rùa",
+    "Chúc bạn 12 tháng phú quý\n365 ngày phát tài\n8760 giờ sung túc",
+    "Hay ăn chóng béo\nTiền nhiều như kẹo\nTình chặt như keo",
+    "Vạn sự như ý\nTỷ sự như mơ\nTriệu triệu bất ngờ",
+    "Năm mới năm me\nGia đình mạnh khỏe\nMọi người tươi trẻ",
+    "Tân niên tân phúc tân phú quý\nTấn tài tấn lộc tấn bình an",
+    "Cầu được ước thấy\nXuân mới vui vầy\nCái gì cũng hay!",
+    "Lộc biếc, mai vàng, xuân hạnh phúc\nĐời vui, sức khỏe, tết an khang",
+    "Tiền đầy túi\nTim đầy tình\nXăng đầy bình\nGạo đầy lu"
+];
+
+const envelopeElement = document.getElementById('lucky-money-container'); // Need to update HTML ID
+const redEnvelope = document.querySelector('.red-envelope');
+const luckyMessageContainer = document.querySelector('.lucky-message');
+const messageContent = luckyMessageContainer.querySelector('p');
+const luckyTitle = luckyMessageContainer.querySelector('h3');
+
+let isEnvelopeOpen = false;
+
+function getRandomWish() {
+    return wishes[Math.floor(Math.random() * wishes.length)];
+}
+
+function openEnvelope() {
+    if (isEnvelopeOpen) return;
+
+    // 1. Animation State
+    isEnvelopeOpen = true;
+    redEnvelope.classList.add('open');
+
+    // 2. Random Wish
+    const wish = getRandomWish();
+    // Wrap new lines in <br>
+    messageContent.innerHTML = wish.replace(/\n/g, '<br>');
+    luckyTitle.innerText = "Chúc Mừng Năm Mới!";
+
+    // 3. Show Result
+    luckyMessageContainer.classList.remove('hidden');
+
+    // 4. Effects
+    setTimeout(() => {
+        luckyMessageContainer.classList.add('show');
+        confettiExplosion();
+        // Vibrate toggle
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }, 300);
+}
+
+// Reset function for testing or re-shaking
+function resetEnvelope() {
+    if (!isEnvelopeOpen) return;
+
+    luckyMessageContainer.classList.remove('show');
+    setTimeout(() => {
+        luckyMessageContainer.classList.add('hidden');
+        redEnvelope.classList.remove('open');
+        isEnvelopeOpen = false;
+    }, 300);
+}
+
+// Global exposure for HTML onclick
+window.openEnvelope = openEnvelope;
+
+// === 5. SHAKE MOTION SENSOR ===
+let lastX = 0, lastY = 0, lastZ = 0;
+let lastShakeTime = 0;
+const SHAKE_THRESHOLD = 15; // Validation needed on real device, 15 is reasonable for "deliberate shake"
+
+function initMotionSensor() {
+    // Check if Request Permission is needed (iOS 13+)
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        // Show a helper UI or just bind to first click (Best UX: Bind to a "Shake Enable" button or the Envelope click)
+        // For now, we assume user clicks the envelope/page content first.
+        // We will expose a visible button in HTML to enable this explicitly.
+    } else if ('ondevicemotion' in window) {
+        window.addEventListener('devicemotion', handleMotion, false);
+    }
+}
+
+function requestMotionPermission() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion, false);
+                    alert("Đã bật tính năng Lắc điện thoại! 📳");
+                    // Hide permission button if exists
+                    const btn = document.getElementById('btn-enable-shake');
+                    if (btn) btn.style.display = 'none';
+                } else {
+                    alert("Bạn đã từ chối quyền cảm biến. Hãy bật lại trong cài đặt Safari.");
+                }
+            })
+            .catch(console.error);
+    } else {
+        alert("Thiết bị của bạn không cần cấp quyền hoặc không hỗ trợ.");
+    }
+}
+window.requestMotionPermission = requestMotionPermission;
+
+function handleMotion(event) {
+    const current = event.accelerationIncludingGravity;
+    if (!current) return;
+
+    const currentTime = new Date().getTime();
+    if ((currentTime - lastShakeTime) < 1500) return; // Debounce 1.5s
+
+    const deltaX = Math.abs(lastX - current.x);
+    const deltaY = Math.abs(lastY - current.y);
+    const deltaZ = Math.abs(lastZ - current.z);
+
+    if ((deltaX > SHAKE_THRESHOLD && deltaY > SHAKE_THRESHOLD) ||
+        (deltaX > SHAKE_THRESHOLD && deltaZ > SHAKE_THRESHOLD) ||
+        (deltaY > SHAKE_THRESHOLD && deltaZ > SHAKE_THRESHOLD)) {
+
+        // Shake Detected!
+        lastShakeTime = currentTime;
+        onShakeDetected();
+    }
+
+    lastX = current.x;
+    lastY = current.y;
+    lastZ = current.z;
+}
+
+function onShakeDetected() {
+    console.log("Shake detected!");
+
+    // Add CSS Shake visual to body
+    document.body.classList.add('shaking');
+    setTimeout(() => document.body.classList.remove('shaking'), 500);
+
+    // Interaction
+    if (!isEnvelopeOpen) {
+        // Scroll to envelope if valid
+        const section = document.getElementById('lucky');
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+
+        setTimeout(() => openEnvelope(), 500);
+    } else {
+        // If already open, shake to get a NEW wish?
+        // Let's do a reset-then-open effect specifically for Shake
+        luckyMessageContainer.classList.remove('show');
         setTimeout(() => {
-            message.classList.add('show');
-            confettiExplosion(); // Bonus visual
+            const wish = getRandomWish();
+            messageContent.innerHTML = wish.replace(/\n/g, '<br>');
+            luckyMessageContainer.classList.add('show');
+            confettiExplosion();
+            if (navigator.vibrate) navigator.vibrate(200);
         }, 300);
     }
 }
 
-// === 5. SHARING LOGIC ===
+// Initialize
+initMotionSensor();
+
+// === 6. SHARING LOGIC ===
+// (Keep existing code but ensure 'shareTo' is correct)
 function shareTo(platform) {
-    const url = window.location.href; // In production, use your actual canonical URL
-    const text = "Chúc mừng năm mới 2026! Nhận lời chúc Tết tại đây: ";
-    
-    // Use Native Share API if available (Best for Mobile)
+    // ... existing code ...
+    const url = window.location.href;
+    const text = "Chúc mừng năm mới 2026! Nhận lì xì ngay: ";
+
     if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         navigator.share({
             title: 'Chúc Mừng Năm Mới 2026',
@@ -137,9 +284,8 @@ function shareTo(platform) {
         return;
     }
 
-    // Fallback for Desktop / Browsers without navigator.share
     let shareUrl = '';
-    switch(platform) {
+    switch (platform) {
         case 'facebook':
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
             break;
@@ -147,18 +293,15 @@ function shareTo(platform) {
             shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + url)}`;
             break;
         case 'zalo':
-            // Zalo doesn't have a direct public share URL API easily accessible.
-            // We'll prompt to copy link or open Zalo web.
-            // Attempt deep link for mobile
             if (/Android|iPhone/i.test(navigator.userAgent)) {
-                 alert("Đã sao chép liên kết! Hãy mở Zalo để dán và gửi cho bạn bè.");
-                 navigator.clipboard.writeText(text + url);
-                 window.location.href = "zalo://"; // Try opening app
-                 return;
+                navigator.clipboard.writeText(text + url);
+                alert("Đã sao chép! Mở Zalo để gửi ngay.");
+                window.location.href = "zalo://";
+                return;
             } else {
-                 shareUrl = `https://chat.zalo.me/`;
-                 alert("Đã sao chép liên kết! Bạn có thể dán vào Zalo.");
-                 navigator.clipboard.writeText(text + url);
+                shareUrl = `https://chat.zalo.me/`;
+                navigator.clipboard.writeText(text + url);
+                alert("Đã sao chép liên kết!");
             }
             break;
     }
@@ -168,11 +311,12 @@ function shareTo(platform) {
     }
 }
 
-// Bonus: Tiny confetti explosion when opening envelope (CSS/JS hybrid)
+// ... Confetti (Keep existing) ...
+
 function confettiExplosion() {
     const colors = ['#f00', '#ffd700', '#0f0'];
     const envelope = document.querySelector('.lucky-money');
-    
+
     for (let i = 0; i < 20; i++) {
         const confetti = document.createElement('div');
         confetti.style.position = 'absolute';
@@ -182,13 +326,13 @@ function confettiExplosion() {
         confetti.style.left = '50%';
         confetti.style.top = '50%';
         confetti.style.transition = 'all 1s ease-out';
-        
+
         // Random destination
         const destX = (Math.random() - 0.5) * 200;
         const destY = (Math.random() - 0.5) * 200;
-        
+
         envelope.appendChild(confetti);
-        
+
         // Trigger animation
         requestAnimationFrame(() => {
             confetti.style.transform = `translate(${destX}px, ${destY}px) rotate(${Math.random() * 360}deg)`;
