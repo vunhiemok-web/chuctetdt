@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chúc Mừng Năm Mới 2026</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="Gửi lời chúc mừng năm mới 2026 Ất Tỵ tràn đầy niềm vui, hạnh phúc và thịnh vượng.">
+    <meta property="og:title" content="Chúc Mừng Năm Mới 2026 - An Khang Thịnh Vượng">
+    <meta property="og:description" content="Nhận lời chúc Tết ý nghĩa ngay tại đây!">
+    <meta property="og:image" content="https://tet26.netlify.app/thumbnail.jpg"> <!-- Placeholder only -->
+    <meta property="og:url" content="current_page_url">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Falling Effect Canvas -->
+    <canvas id="falling-effect"></canvas>
+
+    <main class="parallax-wrapper">
+        
+        <!-- Section 1: Hero -->
+        <section class="screen hero-section" id="hero">
+            <div class="content glow-text">
+                <div class="year-badge">2026</div>
+                <h1 class="main-title animate-title">Chúc Mừng<br>Năm Mới</h1>
+                <p class="subtitle animate-subtitle">Xuân Ất Tỵ - Vạn Sự Như Ý</p>
+                <div class="scroll-indicator">
+                    <div class="mouse"></div>
+                    <p>Cuộn xuống</p>
+                </div>
+            </div>
+            <div class="decorative-layer layer-1"></div>
+            <div class="decorative-layer layer-2"></div>
+        </section>
+
+        <!-- Section 2: Wishes -->
+        <section class="screen message-section" id="message">
+            <div class="card glass-effect scroll-reveal">
+                <div class="card-header">
+                    <i class="fa-solid fa-scroll"></i>
+                    <h2>Lời Chúc Đầu Năm</h2>
+                </div>
+                <div class="card-body">
+                    <p>Năm mới Ất Tỵ 2026 đã đến!</p>
+                    <p>Kính chúc bạn và gia đình một năm mới tràn đầy <strong>Sức Khỏe</strong>, <strong>Hạnh Phúc</strong> và <strong>Thành Công</strong>.</p>
+                    <p>Mong rằng mọi ưu phiền năm cũ sẽ tan biến, nhường chỗ cho những cơ hội mới, niềm vui mới và những khoảnh khắc sum vầy ấm áp.</p>
+                    <p class="highlight-text">"Tiền vào như nước sông Đà<br>Tiền ra nhỏ giọt như cà phê phin"</p>
+                </div>
+                <div class="decoration-icon">🌸</div>
+            </div>
+        </section>
+
+        <!-- Section 3: Red Envelope / Lucky Money (Concept) -->
+        <section class="screen lucky-section" id="lucky">
+            <div class="lucky-money scroll-reveal delay-100">
+                <div class="red-envelope" onclick="openEnvelope(this)">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-body">
+                        <span class="chu-tet">Lì Xì</span>
+                    </div>
+                </div>
+                <p class="instruction">Chạm để mở bao lì xì may mắn!</p>
+                <div class="lucky-message hidden">
+                    <h3>Đại Cát Đại Lợi!</h3>
+                    <p>Chúc bạn năm nay gặt hái được nhiều thành công rực rỡ!</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Social Share Bar (Fixed Bottom) -->
+    <div class="social-share-bar">
+        <button class="share-btn facebook" onclick="shareTo('facebook')">
+            <i class="fa-brands fa-facebook-f"></i>
+            <span>Facebook</span>
+        </button>
+        <button class="share-btn zalo" onclick="shareTo('zalo')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Zalo_logo_2024.svg/1024px-Zalo_logo_2024.svg.png" alt="Zalo" class="zalo-icon">
+            <span>Zalo</span>
+        </button>
+        <button class="share-btn whatsapp" onclick="shareTo('whatsapp')">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>WhatsApp</span>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
